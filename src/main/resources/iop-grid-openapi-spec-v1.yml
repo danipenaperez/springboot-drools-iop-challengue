@@ -1,0 +1,125 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: IOP Grid
+  description: Prices Calculator
+servers:
+  - url: http://localhost:8080/iop-grd/api/v1
+paths:
+  /security/login:
+    post:
+      description: Authenticate a user. Returns a JWT token
+      operationId: login
+      parameters:
+        - name: Authorization
+          in: header
+          description: Basic Auth Crendetials
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Login Success Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /price:
+    get:
+      description: Returns the price for a product owned by Brand on a specified date. rfc3339. Defaults calculate for current Date.
+      operationId: getPrice
+      parameters:
+        - name: onDate
+          in: query
+          description: specifed calculation for this date on range
+          required: true
+          schema:
+            type: string
+            format: date-time
+            example: '1985-04-12T23:20:50.52Z'
+        - name: brandId
+          in: query
+          description: The Brand Id
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - name: productId
+          in: query
+          description: The Product Id
+          required: true
+          schema:
+            type: integer
+            format: int32            
+      responses:
+        '200':
+          description: price calculated response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PriceResponse'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    PriceResponse:
+      allOf:
+        - $ref: '#/components/schemas/Price'
+
+    AuthResponse:
+      type: object
+      required:
+        - name  
+      properties:
+        userId:
+          type: integer
+          format: int64
+        token:
+          type: string
+    Price:
+      type: object
+      required:
+        - name  
+      properties:
+        productId:
+          type: integer
+          format: int32
+        brandId:
+          type: integer
+          format: int32
+        rateId:
+          type: integer
+          format: int32      
+        price:
+          type: number
+          format: double       
+        startDateRate:
+          type: string    
+          format: date-time
+          example: '1985-04-12T23:20:50.52Z'   
+        endDateRate:
+          type: string    
+          format: date-time
+          example: '1985-04-12T23:20:50.52Z'                    
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string

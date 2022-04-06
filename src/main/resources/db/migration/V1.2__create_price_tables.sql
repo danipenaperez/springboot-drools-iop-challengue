@@ -1,0 +1,2 @@
+-- Price Table Model
+create table price (brand_id bigint not null, product_id bigint not null, created_by varchar(255), created_date timestamp, last_updated_by varchar(255), lastupdated_date timestamp, currency varchar(255), end_date_rate timestamp, price double, priority bigint, rate_id bigint, start_date_rate timestamp, primary key (brand_id, product_id, rate_id));

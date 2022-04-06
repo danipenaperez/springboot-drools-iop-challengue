@@ -1,0 +1,28 @@
+package iopgrdpRules;
+
+import java.util.ArrayList;  
+import java.util.List;  
+import com.dppware.swa.application.bean.*;
+
+import java.util.Comparator;
+import java.util.List;
+import com.dppware.swa.domain.entity.*;
+import com.dppware.swa.dao.entity.*;
+import java.util.Collections;
+
+import function com.dppware.swa.domain.utils.DomainJavaUtils.orderbyPriorityAsc;
+
+dialect  "mvel"
+
+
+//Calculate highest priority Price and assig to selected
+rule "Price Operation execution"
+    when
+	     $pc : PriceCalculatorOperation()
+
+    then
+     	orderbyPriorityAsc($pc.getInput());
+     	modify($pc){
+     		setOutput($pc.getInput().get(0));
+     	}
+end

@@ -1,0 +1,792 @@
+{
+	"info": {
+		"_postman_id": "b43d5a2c-8aeb-4b04-b792-44884698aa93",
+		"name": "iop-grid",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Integration Test",
+			"item": [
+				{
+					"name": "Login Admin User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.globals.set(\"loginUserName\",\"admin@gmail.com\");",
+									"pm.globals.set(\"loginPassword\",\"1234\");",
+									"console.log(btoa(pm.globals.get(\"loginUserName\")+\":\"+pm.globals.get(\"loginPassword\")));"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Process Data",
+									"var jsonData = pm.response.json(); ",
+									"",
+									"//Publish valid token",
+									"pm.globals.set(\"currentToken\", jsonData.token);",
+									"pm.globals.set(\"currentUserId\", jsonData.userId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "1234",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "admin@gmail.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/iop-grd/api/v1/security/login",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"iop-grd",
+								"api",
+								"v1",
+								"security",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request for Product Price on 2020-06-14 at 10:00",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.globals.set(\"targetProductId\",35455);",
+									"pm.globals.set(\"targetBrandId\",1);",
+									"pm.globals.set(\"targetonDate\",\"2020-06-14T10:00:00.00Z\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var moment = require('moment');",
+									"/**",
+									" * Expected Result values",
+									" */",
+									"var expectedResult ={",
+									"    httpCode:200,",
+									"    body: {",
+									"        targetProductId:pm.globals.get(\"targetProductId\"),",
+									"        targetBrandId:pm.globals.get(\"targetBrandId\"),",
+									"        targetonDate:pm.globals.get(\"targetonDate\"),",
+									"        targetRateId:1, //Expected",
+									"        targetPrice:35.5 //Expected",
+									"    }",
+									"}",
+									"",
+									"",
+									"",
+									"pm.test(\"Status code is \"+expectedResult.httpCode, function () {",
+									"       pm.response.to.have.status(expectedResult.httpCode);",
+									"});",
+									"pm.test(\"response must be with Body\", function () {",
+									"       // assert that the response has a valid JSON body",
+									"       pm.response.to.be.withBody;",
+									"});",
+									"",
+									"",
+									"//Process Data",
+									"var jsonData = pm.response.json(); ",
+									"pm.test(\"BrandId and ProductId Match\", function () {",
+									"    pm.expect(jsonData.brandId).eq(expectedResult.body.targetBrandId);",
+									"    pm.expect(jsonData.productId).eq(expectedResult.body.targetProductId);",
+									"});",
+									"pm.test(\"Query Date is in Period time\", function () {",
+									"    var startDatePeriod = moment.utc(jsonData.startDateRate);",
+									"    pm.expect(startDatePeriod.isBefore(expectedResult.body.targetonDate)).to.be.true;",
+									"",
+									"    var endDateRate = moment.utc(jsonData.endDateRate);",
+									"    pm.expect(endDateRate.isAfter(expectedResult.body.targetonDate)).to.be.true;",
+									"});",
+									"pm.test(\"RateId and Price Is expected\", function () {",
+									"    pm.expect(jsonData.rateId).eq(expectedResult.body.targetRateId);",
+									"    pm.expect(jsonData.price).eq(expectedResult.body.targetPrice);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{currentToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/iop-grd/api/v1/price?onDate={{targetonDate}}&brandId={{targetBrandId}}&productId={{targetProductId}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"iop-grd",
+								"api",
+								"v1",
+								"price"
+							],
+							"query": [
+								{
+									"key": "onDate",
+									"value": "{{targetonDate}}"
+								},
+								{
+									"key": "brandId",
+									"value": "{{targetBrandId}}"
+								},
+								{
+									"key": "productId",
+									"value": "{{targetProductId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request for Product Price on 2020-06-14 at 16:00",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.globals.set(\"targetProductId\",35455);",
+									"pm.globals.set(\"targetBrandId\",1);",
+									"pm.globals.set(\"targetonDate\",\"2020-06-14T16:00:00.00Z\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var moment = require('moment');",
+									"/**",
+									" * Expected Result values",
+									" */",
+									"var expectedResult ={",
+									"    httpCode:200,",
+									"    body: {",
+									"        targetProductId:pm.globals.get(\"targetProductId\"),",
+									"        targetBrandId:pm.globals.get(\"targetBrandId\"),",
+									"        targetonDate:pm.globals.get(\"targetonDate\"),",
+									"        targetRateId:2, //Expected",
+									"        targetPrice:25.45 //Expected",
+									"    }",
+									"}",
+									"",
+									"",
+									"",
+									"pm.test(\"Status code is \"+expectedResult.httpCode, function () {",
+									"       pm.response.to.have.status(expectedResult.httpCode);",
+									"});",
+									"pm.test(\"response must be with Body\", function () {",
+									"       // assert that the response has a valid JSON body",
+									"       pm.response.to.be.withBody;",
+									"});",
+									"",
+									"",
+									"//Process Data",
+									"var jsonData = pm.response.json(); ",
+									"pm.test(\"BrandId and ProductId Match\", function () {",
+									"    pm.expect(jsonData.brandId).eq(expectedResult.body.targetBrandId);",
+									"    pm.expect(jsonData.productId).eq(expectedResult.body.targetProductId);",
+									"});",
+									"pm.test(\"Query Date is in Period time\", function () {",
+									"    var startDatePeriod = moment.utc(jsonData.startDateRate);",
+									"    pm.expect(startDatePeriod.isBefore(expectedResult.body.targetonDate)).to.be.true;",
+									"",
+									"    var endDateRate = moment.utc(jsonData.endDateRate);",
+									"    pm.expect(endDateRate.isAfter(expectedResult.body.targetonDate)).to.be.true;",
+									"});",
+									"pm.test(\"RateId and Price Is expected\", function () {",
+									"    pm.expect(jsonData.rateId).eq(expectedResult.body.targetRateId);",
+									"    pm.expect(jsonData.price).eq(expectedResult.body.targetPrice);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{currentToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/iop-grd/api/v1/price?onDate={{targetonDate}}&brandId={{targetBrandId}}&productId={{targetProductId}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"iop-grd",
+								"api",
+								"v1",
+								"price"
+							],
+							"query": [
+								{
+									"key": "onDate",
+									"value": "{{targetonDate}}"
+								},
+								{
+									"key": "brandId",
+									"value": "{{targetBrandId}}"
+								},
+								{
+									"key": "productId",
+									"value": "{{targetProductId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request for Product Price on 2020-06-14 at 21:00",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.globals.set(\"targetProductId\",35455);",
+									"pm.globals.set(\"targetBrandId\",1);",
+									"pm.globals.set(\"targetonDate\",\"2020-06-14T21:00:00.00Z\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var moment = require('moment');",
+									"/**",
+									" * Expected Result values",
+									" */",
+									"var expectedResult ={",
+									"    httpCode:200,",
+									"    body: {",
+									"        targetProductId:pm.globals.get(\"targetProductId\"),",
+									"        targetBrandId:pm.globals.get(\"targetBrandId\"),",
+									"        targetonDate:pm.globals.get(\"targetonDate\"),",
+									"        targetRateId:1, //Expected",
+									"        targetPrice:35.5 //Expected",
+									"    }",
+									"}",
+									"",
+									"",
+									"",
+									"pm.test(\"Status code is \"+expectedResult.httpCode, function () {",
+									"       pm.response.to.have.status(expectedResult.httpCode);",
+									"});",
+									"pm.test(\"response must be with Body\", function () {",
+									"       // assert that the response has a valid JSON body",
+									"       pm.response.to.be.withBody;",
+									"});",
+									"",
+									"",
+									"//Process Data",
+									"var jsonData = pm.response.json(); ",
+									"pm.test(\"BrandId and ProductId Match\", function () {",
+									"    pm.expect(jsonData.brandId).eq(expectedResult.body.targetBrandId);",
+									"    pm.expect(jsonData.productId).eq(expectedResult.body.targetProductId);",
+									"});",
+									"pm.test(\"Query Date is in Period time\", function () {",
+									"    var startDatePeriod = moment.utc(jsonData.startDateRate);",
+									"    pm.expect(startDatePeriod.isBefore(expectedResult.body.targetonDate)).to.be.true;",
+									"",
+									"    var endDateRate = moment.utc(jsonData.endDateRate);",
+									"    pm.expect(endDateRate.isAfter(expectedResult.body.targetonDate)).to.be.true;",
+									"});",
+									"pm.test(\"RateId and Price Is expected\", function () {",
+									"    pm.expect(jsonData.rateId).eq(expectedResult.body.targetRateId);",
+									"    pm.expect(jsonData.price).eq(expectedResult.body.targetPrice);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{currentToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/iop-grd/api/v1/price?onDate={{targetonDate}}&brandId={{targetBrandId}}&productId={{targetProductId}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"iop-grd",
+								"api",
+								"v1",
+								"price"
+							],
+							"query": [
+								{
+									"key": "onDate",
+									"value": "{{targetonDate}}"
+								},
+								{
+									"key": "brandId",
+									"value": "{{targetBrandId}}"
+								},
+								{
+									"key": "productId",
+									"value": "{{targetProductId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request for Product Price on 2020-06-15 at 10:00",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var moment = require('moment');",
+									"pm.globals.set(\"targetProductId\",35455);",
+									"pm.globals.set(\"targetBrandId\",1);",
+									"pm.globals.set(\"targetonDate\",\"2020-06-15T10:00:00.00Z\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var moment = require('moment');",
+									"/**",
+									" * Expected Result values",
+									" */",
+									"var expectedResult ={",
+									"    httpCode:200,",
+									"    body: {",
+									"        targetProductId:pm.globals.get(\"targetProductId\"),",
+									"        targetBrandId:pm.globals.get(\"targetBrandId\"),",
+									"        targetonDate:pm.globals.get(\"targetonDate\"),",
+									"        targetRateId:3, //Expected",
+									"        targetPrice:30.5 //Expected",
+									"    }",
+									"}",
+									"",
+									"",
+									"",
+									"pm.test(\"Status code is \"+expectedResult.httpCode, function () {",
+									"       pm.response.to.have.status(expectedResult.httpCode);",
+									"});",
+									"pm.test(\"response must be with Body\", function () {",
+									"       // assert that the response has a valid JSON body",
+									"       pm.response.to.be.withBody;",
+									"});",
+									"",
+									"",
+									"//Process Data",
+									"var jsonData = pm.response.json(); ",
+									"pm.test(\"BrandId and ProductId Match\", function () {",
+									"    pm.expect(jsonData.brandId).eq(expectedResult.body.targetBrandId);",
+									"    pm.expect(jsonData.productId).eq(expectedResult.body.targetProductId);",
+									"});",
+									"pm.test(\"Query Date is in Period time\", function () {",
+									"    var startDatePeriod = moment.utc(jsonData.startDateRate);",
+									"    pm.expect(startDatePeriod.isBefore(expectedResult.body.targetonDate)).to.be.true;",
+									"",
+									"    var endDateRate = moment.utc(jsonData.endDateRate);",
+									"    pm.expect(endDateRate.isAfter(expectedResult.body.targetonDate)).to.be.true;",
+									"});",
+									"pm.test(\"RateId and Price Is expected\", function () {",
+									"    pm.expect(jsonData.rateId).eq(expectedResult.body.targetRateId);",
+									"    pm.expect(jsonData.price).eq(expectedResult.body.targetPrice);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{currentToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/iop-grd/api/v1/price?onDate={{targetonDate}}&brandId={{targetBrandId}}&productId={{targetProductId}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"iop-grd",
+								"api",
+								"v1",
+								"price"
+							],
+							"query": [
+								{
+									"key": "onDate",
+									"value": "{{targetonDate}}"
+								},
+								{
+									"key": "brandId",
+									"value": "{{targetBrandId}}"
+								},
+								{
+									"key": "productId",
+									"value": "{{targetProductId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request for Product Price on 2020-06-16 at 21:00",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.globals.set(\"targetProductId\",35455);",
+									"pm.globals.set(\"targetBrandId\",1);",
+									"pm.globals.set(\"targetonDate\",\"2020-06-16T21:00:00.00Z\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var moment = require('moment');",
+									"/**",
+									" * Expected Result values",
+									" */",
+									"var expectedResult ={",
+									"    httpCode:200,",
+									"    body: {",
+									"        targetProductId:pm.globals.get(\"targetProductId\"),",
+									"        targetBrandId:pm.globals.get(\"targetBrandId\"),",
+									"        targetonDate:pm.globals.get(\"targetonDate\"),",
+									"        targetRateId:4, //Expected",
+									"        targetPrice:38.95 //Expected",
+									"    }",
+									"}",
+									"",
+									"",
+									"",
+									"pm.test(\"Status code is \"+expectedResult.httpCode, function () {",
+									"       pm.response.to.have.status(expectedResult.httpCode);",
+									"});",
+									"pm.test(\"response must be with Body\", function () {",
+									"       // assert that the response has a valid JSON body",
+									"       pm.response.to.be.withBody;",
+									"});",
+									"",
+									"",
+									"//Process Data",
+									"var jsonData = pm.response.json(); ",
+									"pm.test(\"BrandId and ProductId Match\", function () {",
+									"    pm.expect(jsonData.brandId).eq(expectedResult.body.targetBrandId);",
+									"    pm.expect(jsonData.productId).eq(expectedResult.body.targetProductId);",
+									"});",
+									"pm.test(\"Query Date is in Period time\", function () {",
+									"    var startDatePeriod = moment.utc(jsonData.startDateRate);",
+									"    pm.expect(startDatePeriod.isBefore(expectedResult.body.targetonDate)).to.be.true;",
+									"",
+									"    var endDateRate = moment.utc(jsonData.endDateRate);",
+									"    pm.expect(endDateRate.isAfter(expectedResult.body.targetonDate)).to.be.true;",
+									"});",
+									"pm.test(\"RateId and Price Is expected\", function () {",
+									"    pm.expect(jsonData.rateId).eq(expectedResult.body.targetRateId);",
+									"    pm.expect(jsonData.price).eq(expectedResult.body.targetPrice);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{currentToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/iop-grd/api/v1/price?onDate={{targetonDate}}&brandId={{targetBrandId}}&productId={{targetProductId}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"iop-grd",
+								"api",
+								"v1",
+								"price"
+							],
+							"query": [
+								{
+									"key": "onDate",
+									"value": "{{targetonDate}}"
+								},
+								{
+									"key": "brandId",
+									"value": "{{targetBrandId}}"
+								},
+								{
+									"key": "productId",
+									"value": "{{targetProductId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request for Product Unauthenticated",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.globals.set(\"targetProductId\",35455);",
+									"pm.globals.set(\"targetBrandId\",1);",
+									"pm.globals.set(\"targetonDate\",\"2022-06-16T21:00:00.00Z\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var moment = require('moment');",
+									"/**",
+									" * Expected Result values",
+									" */",
+									"var expectedResult ={",
+									"    httpCode:403,",
+									"    body: {",
+									"        \"error\": \"Forbidden\"",
+									"    }",
+									"}",
+									"",
+									"",
+									"",
+									"pm.test(\"Status code is \"+expectedResult.httpCode, function () {",
+									"       pm.response.to.have.status(expectedResult.httpCode);",
+									"});",
+									"pm.test(\"response must be with Body\", function () {",
+									"       // assert that the response has a valid JSON body",
+									"       pm.response.to.be.withBody;",
+									"});",
+									"",
+									"",
+									"//Process Data",
+									"var jsonData = pm.response.json(); ",
+									"pm.test(\"Expected Forbidded\", function () {",
+									"    pm.expect(jsonData.error).eq(expectedResult.body.error);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/iop-grd/api/v1/price?onDate={{targetonDate}}&brandId={{targetBrandId}}&productId={{targetProductId}}",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"iop-grd",
+								"api",
+								"v1",
+								"price"
+							],
+							"query": [
+								{
+									"key": "onDate",
+									"value": "{{targetonDate}}"
+								},
+								{
+									"key": "brandId",
+									"value": "{{targetBrandId}}"
+								},
+								{
+									"key": "productId",
+									"value": "{{targetProductId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request for Product Priceout of Range Copy",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.globals.set(\"targetProductId\",35455);",
+									"pm.globals.set(\"targetBrandId\",1);",
+									"pm.globals.set(\"targetonDate\",\"2022-06-16T21:00:00.00Z\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var moment = require('moment');",
+									"/**",
+									" * Expected Result values",
+									" */",
+									"var expectedResult ={",
+									"    httpCode:200,",
+									"    body: {",
+									"        targetProductId:pm.globals.get(\"targetProductId\"),",
+									"        targetBrandId:pm.globals.get(\"targetBrandId\"),",
+									"        targetonDate:pm.globals.get(\"targetonDate\"),",
+									"        targetRateId:4, //Expected",
+									"        targetPrice:38.95 //Expected",
+									"    }",
+									"}",
+									"",
+									"",
+									"",
+									"pm.test(\"Status code is \"+expectedResult.httpCode, function () {",
+									"       pm.response.to.have.status(expectedResult.httpCode);",
+									"});",
+									"pm.test(\"response must be with Body\", function () {",
+									"       // assert that the response has a valid JSON body",
+									"       pm.response.to.be.withBody;",
+									"});",
+									"",
+									"",
+									"//Process Data",
+									"var jsonData = pm.response.json(); ",
+									"pm.test(\"BrandId and ProductId Match\", function () {",
+									"    pm.expect(jsonData.brandId).eq(expectedResult.body.targetBrandId);",
+									"    pm.expect(jsonData.productId).eq(expectedResult.body.targetProductId);",
+									"});",
+									"pm.test(\"Query Date is in Period time\", function () {",
+									"    var startDatePeriod = moment.utc(jsonData.startDateRate);",
+									"    pm.expect(startDatePeriod.isBefore(expectedResult.body.targetonDate)).to.be.true;",
+									"",
+									"    var endDateRate = moment.utc(jsonData.endDateRate);",
+									"    pm.expect(endDateRate.isAfter(expectedResult.body.targetonDate)).to.be.true;",
+									"});",
+									"pm.test(\"RateId and Price Is expected\", function () {",
+									"    pm.expect(jsonData.rateId).eq(expectedResult.body.targetRateId);",
+									"    pm.expect(jsonData.price).eq(expectedResult.body.targetPrice);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{currentToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/iop-grd/api/v1/price?onDate={{targetonDate}}&brandId={{targetBrandId}}&productId={{targetProductId}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"iop-grd",
+								"api",
+								"v1",
+								"price"
+							],
+							"query": [
+								{
+									"key": "onDate",
+									"value": "{{targetonDate}}"
+								},
+								{
+									"key": "brandId",
+									"value": "{{targetBrandId}}"
+								},
+								{
+									"key": "productId",
+									"value": "{{targetProductId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

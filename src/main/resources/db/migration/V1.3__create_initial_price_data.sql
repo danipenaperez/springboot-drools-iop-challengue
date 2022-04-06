@@ -1,0 +1,7 @@
+-- Initial Price data
+insert into price (created_by, created_date, last_updated_by, lastupdated_date, currency, end_date_rate, price, priority, rate_id, start_date_rate, brand_id, product_id) values ('admin@gmail.com', '2021-08-09T13:57:40', 'admin@gmail.com', '2021-08-09T13:57:40', 'EUR', '2020-12-31T23:59:59+00', 35.50, 0, 1, '2020-06-14T00:00:00+00', 1, 35455);
+insert into price (created_by, created_date, last_updated_by, lastupdated_date, currency, end_date_rate, price, priority, rate_id, start_date_rate, brand_id, product_id) values ('admin@gmail.com', '2021-08-09T13:57:40', 'admin@gmail.com', '2021-08-09T13:57:40', 'EUR', '2020-06-14T18:30:00+00', 25.45, 1, 2, '2020-06-14T15:00:00+00', 1, 35455);
+insert into price (created_by, created_date, last_updated_by, lastupdated_date, currency, end_date_rate, price, priority, rate_id, start_date_rate, brand_id, product_id) values ('admin@gmail.com', '2021-08-09T13:57:40', 'admin@gmail.com', '2021-08-09T13:57:40', 'EUR', '2020-06-15T11:00:00+00', 30.50, 1, 3, '2020-06-15T00:00:00+00', 1, 35455);
+insert into price (created_by, created_date, last_updated_by, lastupdated_date, currency, end_date_rate, price, priority, rate_id, start_date_rate, brand_id, product_id) values ('admin@gmail.com', '2021-08-09T13:57:40', 'admin@gmail.com', '2021-08-09T13:57:40', 'EUR', '2020-12-31T23:59:59+00', 38.95, 1, 4, '2020-06-15T16:00:00+00', 1, 35455);																																																																	
+
+
